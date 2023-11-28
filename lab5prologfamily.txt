@@ -1,0 +1,180 @@
+male(parshu).
+male(ramesh).
+male(khivraj).
+male(ram).
+male(nitin).
+male(nilesh).
+male(nalin).
+male(sonu).
+male(kanha).
+male(madhur).
+male(manan).
+male(rushi).
+male(raghav).
+male(manoj).
+male(anand).
+male(gaurish).
+male(manas).
+male(naman).
+male(arnav).
+male(jagdish).
+male(pradip).
+male(ritesh).
+male(rahul).
+male(shlok).
+male(sarthak).
+female(sarita).
+female(shanta).
+female(maina).
+female(mera).
+female(pankaja).
+female(priti).
+female(pranjal).
+female(prearna).
+female(radhika).
+female(sunita).
+female(sangita).
+female(achal).
+female(shreya).
+female(ruchi)
+
+
+parent(parshu, ramesh).
+parent(parshu, khivraj).
+parent(parshu, ram).
+parent(sarita, ramesh).
+parent(sarita, ram).
+parent(sarita, khivraj).
+parent(ramesh, nitin).
+parent(ramesh, nilesh).
+parent(ramesh, nalin).
+parent(shanta, pankaj).
+parent(shanta, preeti).
+parent(shanta, nilesh).
+parent(nitin, sonu).
+parent(nitin, kanha).
+parent(pankaja, sonu).
+parent(pankaja, kanha).
+parent(nilesh, madhur).
+parent(nilesh, manan).
+parent(priti, madhur).
+parent(priti, manan).
+parent(nalin, rushi).
+parent(nalin, raghav).
+parent(pranjal, rushi).
+parent(pranjal, raghav).
+parent(khivraj, manoj).
+parent(khivraj, anand).
+parent(khivraj,rahul).
+parent(maina, manoj).
+parent(maina, anand).
+parent(manoj, gaurish).
+parent(manoj, manas).
+parent(prearna, gaurish).
+parent(prearna, manas).
+parent(anand, naman).
+parent(anand, arnav).
+parent(radhika, raj).
+parent(radhika, ayush).
+parent(ram, jagdish).
+parent(ram,pradip).
+parent(ram, jagdish).
+parent(mera, jagdish).
+parent(mera, pradip).
+parent(jagdish, ritesh).
+parent(jagdish,shreya).
+parent(sunita,ritesh).
+parent(sunita,shreya).
+parent(pradip,chinmay).
+parent(sangita,chinmay).
+parent(rahul,shlok).
+parent(ruchi,shlok).
+
+
+
+% Marriage relationships
+married(parshu, sarita).
+married(ramesh,shanta).
+married(khivraj, maina).
+married(ram, mera).
+married(nitin,pankaja).
+married(nilesh,priti).
+married(nalin,pranjal).
+married(manoj,prearna).
+married(anand,radhika).
+married(jagdish,sunita).
+married(pradip,sangita).
+married(ritesh,achal).
+married(sarthak,shreya).
+married(rahul,ruchi).
+brother(X,Y):- male(X),parent(Z,X),parent(Z,Y),X\=Y.
+
+sister(X,Y):- female(X),parent(Z,X),parent(Z,Y),X\=Y.
+
+husband(X,Y):- male(X),female(Y),married(X,Y).
+
+wife(X,Y):- female(X),male(Y),married(Y,X).
+
+son(X,Y):- male(X),parent(Y,X).
+
+daughter(X,Y):- female(X),parent(Y,X).
+
+grandmother(X,Y):- female(X),parent(X,Z),parent(Z,Y).
+
+grandfather(X,Y):- male(X),parent(X,Z),parent(Z,Y).
+
+mother(X,Y):- female(X),parent(X,Y).
+
+father(X,Y):- male(X),parent(X,Y).
+
+cousin(X,Y):- parent(P,X),parent(Q,Y),parent(Z,P),parent(Z,Q),P\=Q,X\=Y.
+
+daughter_in_law(X, Y) :- female(X),married(Z,X),parent(Y, Z).
+
+son_in_law(X,Y):- male(X),married(X,Z),parent(Y,Z).
+
+maternaluncle_mama(X,Y):- parent(Z,Y),parent(P,Z),parent(P,X),male(X),female(Z).
+
+maternalaunt(X,Y):- married(Z,X),maternaluncle(Z,Y).
+
+uncle(X,Y):- parent(Z,Y),parent(P,Z),parent(P,X),Z\=X,male(X).
+
+aunt(X,Y):- female(X),parent(Z,Y),married(P,X),parent(Q,Z),parent(Q,P),Z\=P,male(Z).
+
+second_uncle(X,Y):- male(X),father(D,Y),father(Z,D),father(S,X),brother(S,Z),Z\=S.
+
+second_aunt(X,Y):- female(X),father(D,Y),father(Z,D),husband(R,X),father(T,R),brother(T,Z).
+
+second_maternal_uncle(X,Y):- male(X),mother(D,Y),father(Z,D),father(S,X),brother(S,Z),Z\=S.
+
+second_maternal_aunt(X,Y):- female(X),mother(D,Y),father(Z,D),husband(R,X),father(T,R),brother(T,Z).
+
+aunt_masi(X,Y):-sister(X,Z),mother(Z,Y).
+
+second_cousin(X, Y) :- grandfather(W, Y), brother(W, Z), grandfather(Z, X).
+
+great_grandfather(X, Z) :- father(X, Y), grandfather(Y, Z).
+
+great_grandmother(X, Z) :- mother(X, Y), grandfather(Y, Z).
+
+grandson(X, Y) :- male(X), grandmother(Y, X).
+
+grandson_2(X, Y) :- male(X), grandfather(Y, X).
+
+granddaughter(X,Y):-female(X), grandmother(Y,X).
+
+granddaughter_2(X,Y):-female(X), grandfather(Y,X).
+
+second_grandmother(X, Y) :- second_uncle(W, Y), mother(X, W).
+
+second_grandfather(X, Y) :- second_uncle(W, Y), father(X, W).
+
+sister_in_law(X,Y):-married(Z,Y),brother(Z,X).
+
+second_sister_in_law(X,Y):- married(Z,Y),cousin(Z,X).
+
+brother_in_law(X,Y):-married(X,Z),brother(Y,Z).
+
+brother_in_law_2(X,Y):- married(X,Z),married(Y,W),sister(Z,W).
+
+sisterinlaw_bhabhi1(X,Y):-husband(Z,X),parent(W,Z),parent(W,Y).

@@ -1,0 +1,168 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+const char PLAYER_X = 'X';
+const char PLAYER_O = 'O';
+const char EMPTY = ' ';
+
+struct Move {
+    int index;
+};
+
+bool isMovesLeft(const vector<char>& board) {
+    for (char cell : board) {
+        if (cell == EMPTY) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int evaluate(const vector<char>& board) {
+    // Check rows, columns, and diagonals for a winner
+    for (int i = 0; i < 3; i++) {
+        int rowStart = i * 3;
+        if (board[rowStart] == board[rowStart + 1] && board[rowStart + 1] == board[rowStart + 2]) {
+            if (board[rowStart] == PLAYER_X) {
+                return 10;
+            } else if (board[rowStart] == PLAYER_O) {
+                return -10;
+            }
+        }
+
+        if (board[i] == board[i + 3] && board[i + 3] == board[i + 6]) {
+            if (board[i] == PLAYER_X) {
+                return 10;
+            } else if (board[i] == PLAYER_O) {
+                return -10;
+            }
+        }
+    }
+
+    if (board[0] == board[4] && board[4] == board[8]) {
+        if (board[0] == PLAYER_X) {
+            return 10;
+        } else if (board[0] == PLAYER_O) {
+            return -10;
+        }
+    }
+
+    if (board[2] == board[4] && board[4] == board[6]) {
+        if (board[2] == PLAYER_X) {
+            return 10;
+        } else if (board[2] == PLAYER_O) {
+            return -10;
+        }
+    }
+
+    // No winner
+    return 0;
+}
+
+int minimax(vector<char>& board, int depth, bool isMaximizing) {
+    int score = evaluate(board);
+
+    if (score == 10 || score == -10) {
+        return score;
+    }
+
+    if (!isMovesLeft(board)) {
+        return 0;
+    }
+
+    if (isMaximizing) {
+        int best = -1000;
+        for (int i = 0; i < 9; i++) {
+            if (board[i] == EMPTY) {
+                board[i] = PLAYER_X;
+                best = max(best, minimax(board, depth + 1, !isMaximizing));
+                board[i] = EMPTY;
+            }
+        }
+        return best;
+    } else {
+        int best = 1000;
+        for (int i = 0; i < 9; i++) {
+            if (board[i] == EMPTY) {
+                board[i] = PLAYER_O;
+                best = min(best, minimax(board, depth + 1, !isMaximizing));
+                board[i] = EMPTY;
+            }
+        }
+        return best;
+    }
+}
+
+Move findBestMove(vector<char>& board) {
+    int bestVal = -1000;
+    Move bestMove;
+    bestMove.index = -1;
+
+    for (int i = 0; i < 9; i++) {
+        if (board[i] == EMPTY) {
+            board[i] = PLAYER_X;
+            int moveVal = minimax(board, 0, false);
+            board[i] = EMPTY;
+
+            if (moveVal > bestVal) {
+                bestVal = moveVal;
+                bestMove.index = i;
+            }
+        }
+    }
+
+    return best-Move;
+}
+
+void printBoard(const vector<char>& board) {
+    for (int i = 0; i < 9; i += 3) {
+        cout << board[i] << " | " << board[i + 1] << " | " << board[i + 2] << endl;
+    }
+}
+
+int main() {
+    vector<char> board(9, EMPTY);
+
+    while (isMovesLeft(board)) {
+        cout << "Current board:\n";
+        printBoard(board);
+
+        // Player's move
+        int index;
+        cout << "Enter the index (0-8) for your move: ";
+        cin >> index;
+
+        if (board[index] != EMPTY) {
+            cout << "Cell already occupied. Try again.\n";
+            continue;
+        }
+
+        board[index] = PLAYER_O;
+
+        if (evaluate(board) == -10) {
+            cout << "Congratulations! You won!\n";
+            printBoard(board);
+            break;
+        }
+
+        // AI's move
+        Move aiMove = findBestMove(board);
+        board[aiMove.index] = PLAYER_X;
+
+        if (evaluate(board) == 10) {
+            cout << "AI wins!\n";
+            printBoard(board);
+            break;
+        }
+    }
+
+    if (!isMovesLeft(board) && evaluate(board) == 0) {
+        cout << "It's a draw!\n";
+        printBoard(board);
+    }
+
+    return 0;
+}
+
